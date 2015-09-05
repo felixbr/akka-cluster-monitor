@@ -21,7 +21,7 @@ lazy val js2jvmSettings = Seq(fastOptJS, fullOptJS, packageJSDependencies).map {
 lazy val root = crossProject.in(file("."))
   .settings(commonSettings: _*)
   .jsSettings(
-    name := "akka-cluster-test-dashboard",
+    name := "akka-cluster-monitor-dashboard",
     scalaJSStage in Global := FastOptStage,
 
     libraryDependencies ++= Seq(
@@ -36,7 +36,7 @@ lazy val root = crossProject.in(file("."))
       base
     }
   ).jvmSettings(
-    name := "akka-cluster-test",
+    name := "akka-cluster-monitor",
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-testkit" % akkaStableVersion,
 
