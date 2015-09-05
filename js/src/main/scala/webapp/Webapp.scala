@@ -1,11 +1,9 @@
 package webapp
 
 import org.scalajs.dom
-import org.scalajs.dom.{CloseEvent, Event, ErrorEvent, MessageEvent}
+import org.scalajs.dom.{CloseEvent, ErrorEvent, Event, MessageEvent}
 
-import scala.annotation.tailrec
 import scala.scalajs.js.JSApp
-import scala.scalajs.runtime.UndefinedBehaviorError
 
 object Webapp extends JSApp {
   def main(): Unit = {
