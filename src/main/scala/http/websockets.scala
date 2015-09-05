@@ -1,24 +1,31 @@
 package http
 
 import akka.actor.ActorSystem
+import akka.cluster.Cluster
 import akka.http.scaladsl._
 import akka.http.scaladsl.model.ws._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.HttpMethods._
 import akka.stream._
 import akka.stream.scaladsl._
-import akka.stream.scaladsl.FlowGraph.Implicits._
 import com.typesafe.config.ConfigFactory
+import stream.PushMessageActor.PushMessage
+import stream._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.io.StdIn.readLine
+import scala.concurrent.duration._
 
 object websockets {
-  val config = ConfigFactory.parseString("akka.cluster.seed-nodes = []")  // don't cluster fow now
-    .withFallback(ConfigFactory.load())
+//  val config = ConfigFactory.parseString("akka.cluster.seed-nodes = []")  // don't cluster fow now
+//    .withFallback(ConfigFactory.load())
 
-  implicit val system = ActorSystem("WebsocketSystem", config)
+  val config = ConfigFactory.load()
+
+  implicit val system = ActorSystem("ClusterSystem", config)
   implicit val materializer = ActorMaterializer()
+
+  val cluster = Cluster(system)
 
   def processTextFlow(processMessage: String => String): Flow[Message, Message, Any] = Flow[Message].collect {
     case TextMessage.Strict(txt) => TextMessage(processMessage(txt))
@@ -47,6 +54,37 @@ object websockets {
   }
 
   def main(args: Array[String]): Unit = {
-    startListening(processTextFlow(t => t))
+    case class WSStreamEvent[T](e: T)
+
+    val flow: Flow[Message, Message, Any] =
+      Flow() { implicit b =>
+        import akka.stream.scaladsl.FlowGraph.Implicits._
+
+        val pushSource = b.add(Source.actorPublisher[PushMessage](PushMessageActor.props))
+
+        val merge = b.add(Merge[WSStreamEvent[_]](2))
+
+        val msgToEvent = b.add(Flow[Message].collect[WSStreamEvent[String]] { case TextMessage.Strict(txt) => WSStreamEvent(txt) })
+        val pushMsgToString = b.add(Flow[PushMessage].collect[WSStreamEvent[PushMessage]] { case p @ PushMessage(_) => WSStreamEvent(p) })
+        val stringToMsg = b.add(Flow[String].map[Message](TextMessage(_)))
+
+        val commandDispatch = b.add(Flow[WSStreamEvent[_]].collect[String] {
+          case WSStreamEvent("nodes") =>
+            cluster.state.members.toList.toString()
+
+          case WSStreamEvent(msg: PushMessage) =>
+            s"msg: $msg"
+
+          case _ =>
+            "unknown command"
+        })
+
+        pushSource ~> pushMsgToString ~> merge ~> commandDispatch ~> stringToMsg
+                          msgToEvent ~> merge
+
+        (msgToEvent.inlet, stringToMsg.outlet)
+    }
+
+    startListening(flow)
   }
 }
