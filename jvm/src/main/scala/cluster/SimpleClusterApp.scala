@@ -3,7 +3,7 @@ package cluster
 import akka.actor.{ActorSystem, Props}
 import com.typesafe.config.ConfigFactory
 
-object SimpleClusterApp extends App {
+object SimpleClusterApp {
 
   def startup(ports: Seq[Int]) = {
     ports.foreach { port =>
@@ -15,6 +15,7 @@ object SimpleClusterApp extends App {
     }
   }
 
-  startup(List(2552, 2553))
-
+//  def main(args: Array[String]): Unit = {
+//    startup(List(2552, 2553))
+//  }
 }

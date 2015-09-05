@@ -1,17 +1,22 @@
 package cluster
 
 import akka.actor.{ActorSystem, Address}
-import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
 
-object NodeJoin extends App {
-  val port = 2555
-  val config = ConfigFactory.parseString(s"akka.remote.netty.tcp.port = $port")
-    .withFallback(ConfigFactory.load())
+import scala.io.StdIn.readLine
 
-  val system = ActorSystem("ClusterSystem", config)
+object NodeJoin {
 
-  val cluster = Cluster(system)
+  def initNode() = {
+    val port = 2555
+    val config = ConfigFactory.parseString(s"akka.remote.netty.tcp.port = $port")
+      .withFallback(ConfigFactory.load())
+
+    val system = ActorSystem("ClusterSystem", config)
+
+    readLine("Press ENTER to quit...\n\n")
+    system.terminate()
+  }
 
   def stringToAddress(url: String): Address = {
     val pattern = """(.+)://(.+)@(.+):(.+)""".r
@@ -24,4 +29,8 @@ object NodeJoin extends App {
         Address("akka.tcp", "ClusterSystem")
     }
   }
+
+//  def main(args: Array[String]): Unit = {
+//    initNode()
+//  }
 }

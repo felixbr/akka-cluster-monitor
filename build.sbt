@@ -24,6 +24,10 @@ lazy val root = crossProject.in(file("."))
     name := "akka-cluster-test-dashboard",
     scalaJSStage in Global := FastOptStage,
 
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % "0.8.0"
+    ),
+
     scalajsOutputDir := (classDirectory in Compile).value / "web" / "js",  // compiled js into js classDirectory
 
     fastOptJS in Compile := {

@@ -84,7 +84,7 @@ object websockets {
       .onComplete(_ => system.terminate()) // and shutdown when done
   }
 
-  def main(args: Array[String]): Unit = {
-    startListening(handlerFlow)
-  }
+//  def main(args: Array[String]): Unit = {
+//    startListening(handlerFlow)
+//  }
 }
