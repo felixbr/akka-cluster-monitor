@@ -5,8 +5,9 @@ import akka.http.scaladsl._
 import akka.http.scaladsl.model.ws._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.HttpMethods._
-import akka.stream.ActorMaterializer
+import akka.stream._
 import akka.stream.scaladsl._
+import akka.stream.scaladsl.FlowGraph.Implicits._
 import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,16 +20,11 @@ object websockets {
   implicit val system = ActorSystem("WebsocketSystem", config)
   implicit val materializer = ActorMaterializer()
 
-  val websocketService = Flow[Message].mapConcat {
-    case tm: TextMessage =>
-      TextMessage(Source.single("Hello ") ++ tm.textStream) :: Nil
-
-    case bm: BinaryMessage =>
-      bm.dataStream.runWith(Sink.ignore)
-      Nil
+  def processTextFlow(processMessage: String => String): Flow[Message, Message, Any] = Flow[Message].collect {
+    case TextMessage.Strict(txt) => TextMessage(processMessage(txt))
   }
 
-  val requestHandler: HttpRequest => HttpResponse = {
+  private def setupRequestHandler(websocketService: Flow[Message, Message, Any]): HttpRequest => HttpResponse = {
     case req @ HttpRequest(GET, Uri.Path("/ws"), _, _, _) =>
       req.header[UpgradeToWebsocket] match {
         case Some(upgrade) => upgrade.handleMessages(websocketService)
@@ -38,9 +34,9 @@ object websockets {
     case _: HttpRequest => HttpResponse(404, entity = "Unknown resource!")
   }
 
-  def startListening(host: String = "localhost", port: Int = 8080): Unit = {
+  def startListening(websocketProcessingFlow: Flow[Message, Message, Any], host: String = "localhost", port: Int = 8080): Unit = {
     val bindingFuture =
-      Http().bindAndHandleSync(requestHandler, interface = host, port = port)
+      Http().bindAndHandleSync(setupRequestHandler(websocketProcessingFlow), interface = host, port = port)
 
     println("Server online at http://localhost:8080/\nPress RETURN to stop...")
     readLine()
@@ -51,6 +47,6 @@ object websockets {
   }
 
   def main(args: Array[String]): Unit = {
-    startListening()
+    startListening(processTextFlow(t => t))
   }
 }

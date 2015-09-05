@@ -7,6 +7,8 @@ scalaVersion := "2.11.7"
 val akkaStableVersion = "2.4-M2"
 val akkaExperimentalVersion = "1.0"
 
+resolvers += "hseeberger at bintray" at "http://dl.bintray.com/hseeberger/maven"
+
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-contrib" % akkaStableVersion,
   "com.typesafe.akka" %% "akka-testkit" % akkaStableVersion,
@@ -17,6 +19,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-core-experimental" % akkaExperimentalVersion,
 
   "com.google.guava" % "guava" % "18.0",
+
+  "de.heikoseeberger" %% "akka-http-upickle" % "1.1.0",
 
   "org.scalatest" %% "scalatest" % "2.1.6" % "test"
 )
