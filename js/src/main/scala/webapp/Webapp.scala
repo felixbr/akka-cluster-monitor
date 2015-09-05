@@ -3,7 +3,9 @@ package webapp
 import org.scalajs.dom
 import org.scalajs.dom.{CloseEvent, Event, ErrorEvent, MessageEvent}
 
+import scala.annotation.tailrec
 import scala.scalajs.js.JSApp
+import scala.scalajs.runtime.UndefinedBehaviorError
 
 object Webapp extends JSApp {
   def main(): Unit = {
@@ -11,8 +13,9 @@ object Webapp extends JSApp {
   }
 
   def initWebsocket(processMessage: String => String): Unit = {
-    val ws = new dom.WebSocket("ws://127.0.0.1:8080/ws")
+    val hostPort = "127.0.0.1:8080"
 
+    val ws = new dom.WebSocket(s"ws://$hostPort/ws")
     ws.onopen = (e: Event) => println(s"ws event: ${e.`type`}")
     ws.onmessage = (m: MessageEvent) => {
       println(m.data)
