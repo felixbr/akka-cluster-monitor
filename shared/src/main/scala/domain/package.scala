@@ -1,4 +1,4 @@
-package domain {
+package domain
 
 import scala.collection.immutable.SortedSet
 import akka.actor.Address
@@ -29,7 +29,5 @@ case class Error(error: String)
 
 object Implicits {
   implicit def membersFromClusterMembers(ms: SortedSet[akka.cluster.Member]): Set[Member] = ms.map(Member.fromClusterMember)
-}
-
 }
 

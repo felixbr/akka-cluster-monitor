@@ -1,4 +1,6 @@
 .idea
+*.iml
+node_modules
 
 ### Scala template
 *.class
@@ -9,7 +11,7 @@
 .history
 .lib/
 dist/*
-target/
+*target/
 lib_managed/
 src_managed/
 project/boot/

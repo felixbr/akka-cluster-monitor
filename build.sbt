@@ -1,31 +1,78 @@
-name := "akka-cluster-test"
+lazy val commonSettings = Seq(
+  version := "0.1",
 
-version := "0.1"
+  scalaVersion := "2.11.7",
 
-scalaVersion := "2.11.7"
+  scalacOptions ++= commonScalacOptions
+)
 
 val akkaStableVersion = "2.4-M2"
 val akkaExperimentalVersion = "1.0"
 
 resolvers += "hseeberger at bintray" at "http://dl.bintray.com/hseeberger/maven"
 
-libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-contrib" % akkaStableVersion,
-  "com.typesafe.akka" %% "akka-testkit" % akkaStableVersion,
-  "com.typesafe.akka" %% "akka-remote" % akkaStableVersion,
-  "com.typesafe.akka" %% "akka-cluster" % akkaStableVersion,
-  "com.typesafe.akka" %% "akka-stream-experimental" % akkaExperimentalVersion,
-  "com.typesafe.akka" %% "akka-http-experimental" % akkaExperimentalVersion,
-  "com.typesafe.akka" %% "akka-http-core-experimental" % akkaExperimentalVersion,
+val scalajsOutputDir = Def.settingKey[File]("directory for javascript files output by scalajs")
 
-  "com.google.guava" % "guava" % "18.0",
+lazy val js2jvmSettings = Seq(fastOptJS, fullOptJS, packageJSDependencies).map { packageJSKey =>
+  crossTarget.in(client, Compile, packageJSKey) := scalajsOutputDir.value
+}
 
-  "de.heikoseeberger" %% "akka-http-upickle" % "1.1.0",
+lazy val root = project.in(file("."))
+  .aggregate(client, server)
+  .settings(
+    aggregate.in(update) := false
+  )
 
-  "org.scalatest" %% "scalatest" % "2.1.6" % "test"
-)
+lazy val client: Project = project.in(file("client"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "akka-cluster-test-dashboard",
+    scalaJSStage in Global := FastOptStage,
 
-scalacOptions ++= Seq(
+    fastOptJS in Compile := {
+      val base = (fastOptJS in Compile).value
+      IO.copyFile(base.data, (classDirectory in Compile).value / "web" / "js" / base.data.getName)
+      IO.copyFile(base.data, (classDirectory in Compile).value / "web" / "js" / (base.data.getName + ".map"))
+      base
+    }
+  )
+  .dependsOn(shared)
+  .enablePlugins(ScalaJSPlugin)
+
+lazy val server: Project = project.in(file("server"))
+  .settings(commonSettings: _*)
+  .settings(js2jvmSettings: _*)
+  .settings(
+    name := "akka-cluster-test",
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-testkit" % akkaStableVersion,
+
+      "com.google.guava" % "guava" % "18.0",
+
+      "de.heikoseeberger" %% "akka-http-upickle" % "1.1.0",
+
+      "org.scalatest" %% "scalatest" % "2.1.6" % "test"
+    ),
+    scalajsOutputDir := (classDirectory in Compile).value / "web" / "js"
+  )
+  .dependsOn(shared)
+
+lazy val shared = project.in(file("shared"))
+  .settings(commonSettings: _*)
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-contrib" % akkaStableVersion,
+      "com.typesafe.akka" %% "akka-remote" % akkaStableVersion,
+      "com.typesafe.akka" %% "akka-cluster" % akkaStableVersion,
+      "com.typesafe.akka" %% "akka-stream-experimental" % akkaExperimentalVersion,
+      "com.typesafe.akka" %% "akka-http-experimental" % akkaExperimentalVersion,
+      "com.typesafe.akka" %% "akka-http-core-experimental" % akkaExperimentalVersion,
+
+      "de.heikoseeberger" %% "akka-http-upickle" % "1.1.0"
+    )
+  )
+
+lazy val commonScalacOptions = Seq(
   "-deprecation",
   "-encoding", "UTF-8", // yes, this is 2 args
   "-feature",
