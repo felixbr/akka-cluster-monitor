@@ -1,4 +1,6 @@
-import akka.actor.{Address, ActorSystem}
+package cluster
+
+import akka.actor.{ActorSystem, Address}
 import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
 

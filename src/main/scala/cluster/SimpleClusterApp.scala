@@ -1,4 +1,6 @@
-import akka.actor.{Props, ActorSystem}
+package cluster
+
+import akka.actor.{ActorSystem, Props}
 import com.typesafe.config.ConfigFactory
 
 object SimpleClusterApp extends App {

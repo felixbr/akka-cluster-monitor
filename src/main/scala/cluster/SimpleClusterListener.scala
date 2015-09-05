@@ -1,3 +1,5 @@
+package cluster
+
 import akka.actor.{Actor, ActorLogging}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent._
