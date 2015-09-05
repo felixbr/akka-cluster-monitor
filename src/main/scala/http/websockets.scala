@@ -3,18 +3,20 @@ package http
 import akka.actor.ActorSystem
 import akka.cluster.Cluster
 import akka.http.scaladsl._
-import akka.http.scaladsl.model.ws._
-import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.HttpMethods._
+import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.ws._
 import akka.stream._
 import akka.stream.scaladsl._
 import com.typesafe.config.ConfigFactory
+import domain.Implicits._
+import domain._
 import stream.PushMessageActor.PushMessage
 import stream._
+import upickle.default._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.io.StdIn.readLine
-import scala.concurrent.duration._
 
 object websockets {
 //  val config = ConfigFactory.parseString("akka.cluster.seed-nodes = []")  // don't cluster fow now
@@ -70,13 +72,13 @@ object websockets {
 
         val commandDispatch = b.add(Flow[WSStreamEvent[_]].collect[String] {
           case WSStreamEvent("nodes") =>
-            cluster.state.members.toList.toString()
+            write(CurrentMembers(cluster.state.members))
 
-          case WSStreamEvent(msg: PushMessage) =>
-            s"msg: $msg"
+          case WSStreamEvent(PushMessage(msg)) =>
+            msg
 
           case _ =>
-            "unknown command"
+            write(Error("unknown command"))
         })
 
         pushSource ~> pushMsgToString ~> merge ~> commandDispatch ~> stringToMsg
