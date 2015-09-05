@@ -12,37 +12,26 @@ val akkaExperimentalVersion = "1.0"
 resolvers += "hseeberger at bintray" at "http://dl.bintray.com/hseeberger/maven"
 
 val scalajsOutputDir = Def.settingKey[File]("directory for javascript files output by scalajs")
+val webOutputDir = Def.settingKey[File]("directory for static files")
 
 lazy val js2jvmSettings = Seq(fastOptJS, fullOptJS, packageJSDependencies).map { packageJSKey =>
-  crossTarget.in(client, Compile, packageJSKey) := scalajsOutputDir.value
+  crossTarget.in(Compile, packageJSKey) := scalajsOutputDir.value
 }
 
-lazy val root = project.in(file("."))
-  .aggregate(client, server)
-  .settings(
-    aggregate.in(update) := false
-  )
-
-lazy val client: Project = project.in(file("client"))
+lazy val root = crossProject.in(file("."))
   .settings(commonSettings: _*)
-  .settings(
+  .jsSettings(
     name := "akka-cluster-test-dashboard",
     scalaJSStage in Global := FastOptStage,
 
+    scalajsOutputDir := (classDirectory in Compile).value / "web" / "js",  // compiled js into js classDirectory
+
     fastOptJS in Compile := {
       val base = (fastOptJS in Compile).value
-      IO.copyFile(base.data, (classDirectory in Compile).value / "web" / "js" / base.data.getName)
-      IO.copyFile(base.data, (classDirectory in Compile).value / "web" / "js" / (base.data.getName + ".map"))
+      IO.copyDirectory((classDirectory in Compile).value / "web", webOutputDir.value)  // copy all static files from js to jvm
       base
     }
-  )
-  .dependsOn(shared)
-  .enablePlugins(ScalaJSPlugin)
-
-lazy val server: Project = project.in(file("server"))
-  .settings(commonSettings: _*)
-  .settings(js2jvmSettings: _*)
-  .settings(
+  ).jvmSettings(
     name := "akka-cluster-test",
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-testkit" % akkaStableVersion,
@@ -53,7 +42,18 @@ lazy val server: Project = project.in(file("server"))
 
       "org.scalatest" %% "scalatest" % "2.1.6" % "test"
     ),
-    scalajsOutputDir := (classDirectory in Compile).value / "web" / "js"
+    webOutputDir in Global := (classDirectory in Compile).value / "web"
+  )
+
+lazy val client: Project = root.js
+  .dependsOn(shared)
+  .settings(js2jvmSettings: _*)
+  .enablePlugins(ScalaJSPlugin)
+
+lazy val server: Project = root.jvm
+  .settings(commonSettings: _*)
+  .settings(
+    (resources in Compile) += (fastOptJS in (client, Compile)).value.data
   )
   .dependsOn(shared)
 
