@@ -11,16 +11,27 @@ object table {
     def hasStatus(status: String): Boolean = member.status == status
   }
 
-  val memberRow = ReactComponentB[Member]("data row").render { member =>
+  val memberRow = ReactComponentB[(Member, Int)]("data row").render { args =>
+    val (member, idx) = args
+
     <.tr(
       ^.classSet(
         "success" -> member.hasStatus("Joining"),
+        "warn" -> member.hasStatus("Unreachable"),
         "error" -> member.hasStatus("Down")
       ),
+      <.td(idx),
       <.td(member.address.protocol),
       <.td(member.address.host),
       <.td(member.address.port),
-      <.td(member.status)
+      <.td(
+        ^.classSet(
+          "info" -> member.hasStatus("Up"),
+          "success" -> member.hasStatus("Joining"),
+          "error" -> member.hasStatus("Down")
+        ),
+        member.status
+      )
     )
   }.build
 
@@ -29,6 +40,7 @@ object table {
       ^.cls := "table table-hover",
       <.thead(
         <.tr(
+          <.th("#"),
           <.th("Protocol"),
           <.th("Host"),
           <.th("Port"),
@@ -36,7 +48,7 @@ object table {
         )
       ),
       <.tbody(
-        members.map(m => memberRow(m))
+        members.zipWithIndex.map { case (m: Member, idx: Int) => memberRow((m, idx + 1)) }
       )
     )
   }.build

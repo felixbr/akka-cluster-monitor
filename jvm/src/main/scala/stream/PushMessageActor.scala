@@ -31,12 +31,15 @@ class PushMessageActor extends ActorPublisher[PushMessage] {
 
   override def receive: Receive = {
     case MemberUp(member) =>
-      self ! PushMessage(write(MemberJoined(member)))
+//      self ! PushMessage(write(MemberJoined(member)))
+      self ! PushMessage(write(ClusterMembers(cluster.state.members.map(Member.fromClusterMember))))
 
     case UnreachableMember(member) =>
+      self ! PushMessage(write(ClusterMembers(cluster.state.members.map(Member.fromClusterMember))))
 
     case MemberRemoved(member, prevStatus) =>
-      self ! PushMessage(write(MemberLeft(member, prevStatus.toString)))
+      self ! PushMessage(write(ClusterMembers(cluster.state.members.map(Member.fromClusterMember))))
+//      self ! PushMessage(write(MemberLeft(member, prevStatus.toString)))
 
     case CurrentClusterState(members, unreachable, _, _, _) =>
       self ! PushMessage(write(ClusterMembers(members.map(Member.fromClusterMember))))

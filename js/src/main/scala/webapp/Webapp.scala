@@ -34,6 +34,7 @@ object Webapp extends JSApp {
   }
 
   def handleServerMessage(tableNode: Element)(data: String): Unit = {
+    println("ws event: received data")
     val json = read[ClusterMembers](data)
     json match {
       case ClusterMembers(members) =>
