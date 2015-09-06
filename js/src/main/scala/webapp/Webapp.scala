@@ -11,38 +11,45 @@ import webapp.components.table.memberTable
 import scala.scalajs.js.JSApp
 
 object Webapp extends JSApp {
+  lazy val tableNode = dom.document.getElementById("cluster-member-table")
+
   def main(): Unit = {
     MainPage.appendTo(dom.document)
 
-    val tableNode = dom.document.getElementById("cluster-member-table")
-    initWebsocket(handleServerMessage(tableNode))
+    initWebsocket(handleServerMessage)
   }
 
-  def initWebsocket(processMessage: String => Unit): Unit = {
+  def initWebsocket(handleMessage: String => Unit): Unit = {
     import config.websocket._
 
     val ws = new dom.WebSocket(s"ws://$host:$port/$route")
     ws.onopen = (e: Event) => println(s"ws event: ${e.`type`}")
-    ws.onmessage = (m: MessageEvent) => processMessage(m.data.toString)
-    ws.onerror = (e: ErrorEvent) => println(s"ws error: ${e.`type`} -> ${e.message}")
+    ws.onmessage = (m: MessageEvent) => handleMessage(m.data.toString)
+    ws.onerror = (e: ErrorEvent) => {
+      println(s"ws error: ${e.`type`} -> ${e.message}")
+      updateTable(Set.empty)
+    }
     ws.onclose = (e: CloseEvent) => {
       println(s"ws event: ${e.`type`}")
+      updateTable(Set.empty)
 
       // try reconnect
-      dom.setTimeout(() => initWebsocket(processMessage), 1000)
+      dom.setTimeout(() => initWebsocket(handleMessage), 1000)
     }
   }
 
-  def handleServerMessage(tableNode: Element)(data: String): Unit = {
+  def handleServerMessage(data: String): Unit = {
     println("ws event: received data")
-    val json = read[ClusterMembers](data)
-    json match {
+    read[ClusterMembers](data) match {
       case ClusterMembers(members) =>
-        println(s"rendering data: $members")
-        React.render(memberTable(members), tableNode)
+        updateTable(members)
 
       case otherData =>
-        println(s"ignoreing data: $otherData")
+        println(s"ignoring data: $otherData")
     }
+  }
+
+  def updateTable(members: Set[Member]) = {
+    React.render(memberTable(members), tableNode)
   }
 }
