@@ -24,11 +24,6 @@ object Server extends {
     } ~
     get {
       getFromResourceDirectory("web")
-    } ~
-    path("js") {
-      get {
-        getFromDirectory("client/target/scala-2.11")
-      }
     }
 
   def main(args: Array[String]): Unit = {

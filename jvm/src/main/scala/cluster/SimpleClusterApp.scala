@@ -15,7 +15,7 @@ object SimpleClusterApp {
     }
   }
 
-//  def main(args: Array[String]): Unit = {
-//    startup(List(2552, 2553))
-//  }
+  def main(args: Array[String]): Unit = {
+    startup(List(2552, 2553))
+  }
 }
