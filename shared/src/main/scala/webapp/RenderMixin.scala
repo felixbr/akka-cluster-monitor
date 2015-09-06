@@ -1,9 +1,9 @@
 package webapp
 
-import org.scalajs.dom.html
+import scalatags.text.Builder
 
 trait RenderMixin[Output] {
-  type HeadComponents = Seq[html.Link]
+  type HeadComponents = Seq[Output]
   type BodyComponents = Seq[Output]
 
   case class RenderedTags(head: HeadComponents, body: BodyComponents)

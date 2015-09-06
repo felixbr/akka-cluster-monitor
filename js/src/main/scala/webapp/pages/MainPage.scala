@@ -1,7 +1,7 @@
-package webapp
+package webapp.pages
 
-import org.scalajs.dom.raw.Node
-import org.scalajs.dom.raw.HTMLDocument
+import org.scalajs.dom.raw.{HTMLDocument, Node}
+import webapp.RenderMixin
 
 object MainPage {
   val page = new MainPage(scalatags.JsDom)
@@ -25,7 +25,7 @@ object MainPage {
 }
 
 class MainPage[Builder, Output <: FragT, FragT](val bundle: scalatags.generic.Bundle[Builder, Output, FragT])
-  extends CSSMixin with RenderMixin[Output] {
+  extends RenderMixin[Output] {
 
   import bundle.all._
 
@@ -104,9 +104,7 @@ class MainPage[Builder, Output <: FragT, FragT](val bundle: scalatags.generic.Bu
   }
 
   override def renderComponents(): RenderedTags = RenderedTags(
-    Seq(
-      header.render
-    ),
+    Seq.empty,
     Seq(
       navbar.render,
       sidebar.render,

@@ -2,6 +2,7 @@ package webapp
 
 import org.scalajs.dom
 import org.scalajs.dom.{CloseEvent, ErrorEvent, Event, MessageEvent}
+import webapp.pages.MainPage
 
 import scala.scalajs.js.JSApp
 

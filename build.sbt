@@ -20,14 +20,16 @@ lazy val js2jvmSettings = Seq(fastOptJS, fullOptJS, packageJSDependencies).map {
 
 lazy val root = crossProject.in(file("."))
   .settings(commonSettings: _*)
-  .jsSettings(
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "scalatags" % "0.5.2"
+    )
+  ).jsSettings(
     name := "akka-cluster-monitor-dashboard",
     scalaJSStage in Global := FastOptStage,
 
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "0.8.0",
-      "com.typesafe" % "config" % "1.3.0",
-      "com.lihaoyi" %%% "scalatags" % "0.5.2"
+      "org.scala-js" %%% "scalajs-dom" % "0.8.0"
     ),
 
     scalajsOutputDir := (classDirectory in Compile).value / "web" / "js",  // compiled js into js classDirectory
@@ -74,7 +76,9 @@ lazy val shared = project.in(file("shared"))
       "com.typesafe.akka" %% "akka-http-experimental" % akkaExperimentalVersion,
       "com.typesafe.akka" %% "akka-http-core-experimental" % akkaExperimentalVersion,
 
-      "de.heikoseeberger" %% "akka-http-upickle" % "1.1.0"
+      "de.heikoseeberger" %% "akka-http-upickle" % "1.1.0",
+
+      "com.lihaoyi" %%% "scalatags" % "0.5.2"
     )
   )
 
