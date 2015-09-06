@@ -5,7 +5,7 @@ import webapp.CSSMixin
 object IndexHtmlPage {
   val page = new IndexHtmlPage()(scalatags.Text)
 
-  def asHtmlString: String = page.content.render
+  def asHtmlString: String = "<!DOCTYPE html>" + page.content.render
 }
 
 class IndexHtmlPage[Builder, Output <: FragT, FragT](implicit val bundle: scalatags.generic.Bundle[Builder, Output, FragT])
