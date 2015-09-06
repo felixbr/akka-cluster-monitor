@@ -6,6 +6,7 @@ import akka.http.scaladsl.model._
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
+import com.typesafe.config.ConfigFactory
 import http.websockets.handlerFlow
 import config.websocket
 import webapp.pages.IndexHtmlPage
@@ -13,9 +14,14 @@ import webapp.pages.IndexHtmlPage
 import scala.io.StdIn.readLine
 
 object Server extends {
-  implicit val system = ActorSystem("ClusterSystem")
+  val port = 2600
+  val config = ConfigFactory.parseString(s"akka.remote.netty.tcp.port = $port")
+    .withFallback(ConfigFactory.load())
+
+  implicit val system = ActorSystem("ClusterSystem", config)
   implicit val mat = ActorMaterializer()
 
+  // use 'text/html' instead of 'text/plain' for serializing Strings
   implicit val marshaller = PredefinedToEntityMarshallers.stringMarshaller(MediaTypes.`text/html`)
 
   val route =

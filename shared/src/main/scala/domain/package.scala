@@ -11,7 +11,11 @@ object aliases {
   type Status = String
 }
 
-case class Member(address: Address, status: Status, roles: Set[Role])
+case class Member(address: Address, status: Status, roles: Set[Role]) {
+  override def equals(obj: scala.Any): Boolean = address.equals(obj)
+
+  override def hashCode(): Int = address.hashCode()
+}
 
 object Member {
   implicit def fromClusterMember(m: akka.cluster.Member): Member = Member(m.address, m.status.toString, m.roles)

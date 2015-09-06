@@ -8,7 +8,7 @@ import scala.io.StdIn.readLine
 object NodeJoin {
 
   def initNode() = {
-    val port = 2555
+    val port = 2553
     val config = ConfigFactory.parseString(s"akka.remote.netty.tcp.port = $port")
       .withFallback(ConfigFactory.load())
 
