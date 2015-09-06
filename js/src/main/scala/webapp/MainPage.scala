@@ -77,31 +77,27 @@ class MainPage[Builder, Output <: FragT, FragT](val bundle: scalatags.generic.Bu
 
   val content = {
     div(cls := "col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main")(
-      h1(cls := "page-header")("Dashboard"),
-      div(cls := "row placeholders")(
-        div(cls := "col-xs-6 col-sm-3 placeholder")(
-          img(
-            cls := "img-responsive", src := "data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==",
-            width := "200", height := "200", alt := "Generic placeholder thumbnail"
-          ),
-          h4("Label"),
-          span(cls := "text-muted")("Something else")
+      h1(cls := "page-header")("Cluster"),
+      table(cls := "table table-hover")(
+        thead(
+          tr(
+            th(cls := "")("Address"),
+            th(cls := "")("Status")
+          )
         ),
-        div(cls := "col-xs-6 col-sm-3 placeholder")(
-          img(
-            cls := "img-responsive", src := "data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==",
-            width := "200", height := "200", alt := "Generic placeholder thumbnail"
+        tbody(
+          tr(
+            td("Address1"), td("Up")
           ),
-          h4("Label"),
-          span(cls := "text-muted")("Something else")
-        ),
-        div(cls := "col-xs-6 col-sm-3 placeholder")(
-          img(
-            cls := "img-responsive", src := "data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==",
-            width := "200", height := "200", alt := "Generic placeholder thumbnail"
+          tr(cls := "success")(
+            td("Address2"), td("Joining")
           ),
-          h4("Label"),
-          span(cls := "text-muted")("Something else")
+          tr(
+            td("Address3"), td("Up")
+          ),
+          tr(
+            td("Address4"), td("Up")
+          )
         )
       )
     )
