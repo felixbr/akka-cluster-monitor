@@ -1,11 +1,12 @@
 package cluster
 
 import akka.actor.{ActorSystem, Address}
+import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
 
 import scala.io.StdIn.readLine
 
-object NodeJoin {
+object SingleNode {
 
   def initNode() = {
     val port = 2553
@@ -13,9 +14,15 @@ object NodeJoin {
       .withFallback(ConfigFactory.load())
 
     val system = ActorSystem("ClusterSystem", config)
+    val cluster = Cluster(system)
 
     readLine("Press ENTER to quit...\n\n")
-    val _ = system.terminate()
+    println("Shutting down...\n\n")
+
+    cluster.registerOnMemberRemoved {
+      system.terminate()
+    }
+    cluster.leave(cluster.selfAddress)
   }
 
   def stringToAddress(url: String): Address = {

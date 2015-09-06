@@ -1,6 +1,7 @@
 package http
 
 import akka.actor.ActorSystem
+import akka.cluster.Cluster
 import akka.http.scaladsl.marshalling.{PredefinedToEntityMarshallers, Marshal}
 import akka.http.scaladsl.model._
 import akka.stream.ActorMaterializer
@@ -13,7 +14,7 @@ import webapp.pages.IndexHtmlPage
 
 import scala.io.StdIn.readLine
 
-object Server extends {
+object MonitoringServer extends {
   val port = 2600
   val config = ConfigFactory.parseString(s"akka.remote.netty.tcp.port = $port")
     .withFallback(ConfigFactory.load())
@@ -43,10 +44,18 @@ object Server extends {
     implicit val ec = system.dispatcher
 
     val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
+    val cluster = Cluster(system)
+
     readLine("Press ENTER to quit...\n\n")
+    println("Shutting down...\n\n")
 
     bindingFuture
       .flatMap(_.unbind()) // trigger unbinding from the port
-      .onComplete(_ => system.terminate()) // and shutdown when done
+      .onComplete { _ =>
+        cluster.registerOnMemberRemoved {
+          system.terminate()
+        }
+        cluster.leave(cluster.selfAddress)
+      }
   }
 }

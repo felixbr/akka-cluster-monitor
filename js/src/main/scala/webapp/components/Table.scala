@@ -17,7 +17,8 @@ object table {
     <.tr(
       ^.classSet(
         "success" -> member.hasStatus("Joining"),
-        "warn" -> member.hasStatus("Unreachable"),
+        "warning" -> member.hasStatus("Unreachable"),
+        "warning" -> member.hasStatus("Exiting"),
         "error" -> member.hasStatus("Down")
       ),
       <.td(idx),
@@ -26,9 +27,7 @@ object table {
       <.td(member.address.port),
       <.td(
         ^.classSet(
-          "info" -> member.hasStatus("Up"),
-          "success" -> member.hasStatus("Joining"),
-          "error" -> member.hasStatus("Down")
+          "info" -> member.hasStatus("Up")
         ),
         member.status
       )
