@@ -25,7 +25,8 @@ lazy val root = crossProject.in(file("."))
     scalaJSStage in Global := FastOptStage,
 
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "0.8.0"
+      "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+      "com.typesafe" % "config" % "1.3.0"
     ),
 
     scalajsOutputDir := (classDirectory in Compile).value / "web" / "js",  // compiled js into js classDirectory

@@ -1,5 +1,6 @@
 package webapp
 
+import com.typesafe.config.ConfigFactory
 import org.scalajs.dom
 import org.scalajs.dom.{CloseEvent, ErrorEvent, Event, MessageEvent}
 
@@ -11,9 +12,9 @@ object Webapp extends JSApp {
   }
 
   def initWebsocket(processMessage: String => String): Unit = {
-    val hostPort = "127.0.0.1:8080"
+    import config.websocket._
 
-    val ws = new dom.WebSocket(s"ws://$hostPort/ws")
+    val ws = new dom.WebSocket(s"ws://$host:$port/$route")
     ws.onopen = (e: Event) => println(s"ws event: ${e.`type`}")
     ws.onmessage = (m: MessageEvent) => {
       println(m.data)

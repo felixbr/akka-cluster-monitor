@@ -5,6 +5,7 @@ import akka.stream.ActorMaterializer
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import http.websockets.handlerFlow
+import config.websocket
 
 import scala.io.StdIn.readLine
 
@@ -16,7 +17,7 @@ object Server extends {
     pathEndOrSingleSlash {
       getFromResource("web/index.html")
     } ~
-    path("ws") {
+    path(websocket.route) {
       get {
         handleWebsocketMessages(handlerFlow)
       }
