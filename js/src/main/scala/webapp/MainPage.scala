@@ -39,7 +39,7 @@ class MainPage[Builder, Output <: FragT, FragT](val bundle: scalatags.generic.Bu
             span(cls := "icon-bar")(),
             span(cls := "icon-bar")()
           ),
-          a(cls := "navbar-brand", href := "#")("Project name")
+          a(cls := "navbar-brand", href := "#")("Akka Cluster Monitor")
         ),
         div(id := "navbar", cls := "navbar-collapse collapse")(
           ul(cls := "nav navbar-nav navbar-right")(
@@ -77,7 +77,7 @@ class MainPage[Builder, Output <: FragT, FragT](val bundle: scalatags.generic.Bu
 
   val content = {
     div(cls := "col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main")(
-      h1(cls := "page-header")("Cluster"),
+      h1(cls := "page-header")("Cluster Nodes"),
       table(cls := "table table-hover")(
         thead(
           tr(
