@@ -26,7 +26,8 @@ lazy val root = crossProject.in(file("."))
 
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.8.0",
-      "com.typesafe" % "config" % "1.3.0"
+      "com.typesafe" % "config" % "1.3.0",
+      "com.lihaoyi" %%% "scalatags" % "0.5.2"
     ),
 
     scalajsOutputDir := (classDirectory in Compile).value / "web" / "js",  // compiled js into js classDirectory
@@ -86,7 +87,7 @@ lazy val commonScalacOptions = Seq(
   "-Xlint",
   "-Yno-adapted-args",
   "-Ywarn-numeric-widen",
-  "-Ywarn-value-discard",
+//  "-Ywarn-value-discard",
   "-Xfuture"
 )
 

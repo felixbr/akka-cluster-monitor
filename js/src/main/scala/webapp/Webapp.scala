@@ -1,6 +1,5 @@
 package webapp
 
-import com.typesafe.config.ConfigFactory
 import org.scalajs.dom
 import org.scalajs.dom.{CloseEvent, ErrorEvent, Event, MessageEvent}
 
@@ -9,6 +8,7 @@ import scala.scalajs.js.JSApp
 object Webapp extends JSApp {
   def main(): Unit = {
     initWebsocket(t => t)
+    MainPage.appendTo(dom.document)
   }
 
   def initWebsocket(processMessage: String => String): Unit = {
