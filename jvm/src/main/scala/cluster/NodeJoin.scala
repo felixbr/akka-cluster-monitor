@@ -15,7 +15,7 @@ object NodeJoin {
     val system = ActorSystem("ClusterSystem", config)
 
     readLine("Press ENTER to quit...\n\n")
-    system.terminate()
+    val _ = system.terminate()
   }
 
   def stringToAddress(url: String): Address = {
@@ -30,7 +30,7 @@ object NodeJoin {
     }
   }
 
-//  def main(args: Array[String]): Unit = {
-//    initNode()
-//  }
+  def main(args: Array[String]): Unit = {
+    initNode()
+  }
 }
