@@ -39,7 +39,7 @@ class PushMessageActor extends ActorPublisher[PushMessage] {
       self ! PushMessage(write(MemberLeft(member, prevStatus.toString)))
 
     case CurrentClusterState(members, unreachable, _, _, _) =>
-      self ! PushMessage(write(CurrentMembers(members.map(Member.fromClusterMember))))
+      self ! PushMessage(write(ClusterMembers(members.map(Member.fromClusterMember))))
 
     case p @ PushMessage(msg) =>
       if (buf.isEmpty && totalDemand > 0) {

@@ -78,28 +78,7 @@ class MainPage[Builder, Output <: FragT, FragT](val bundle: scalatags.generic.Bu
   val content = {
     div(cls := "col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main")(
       h1(cls := "page-header")("Cluster Nodes"),
-      table(cls := "table table-hover")(
-        thead(
-          tr(
-            th(cls := "")("Address"),
-            th(cls := "")("Status")
-          )
-        ),
-        tbody(
-          tr(
-            td("Address1"), td("Up")
-          ),
-          tr(cls := "success")(
-            td("Address2"), td("Joining")
-          ),
-          tr(
-            td("Address3"), td("Up")
-          ),
-          tr(
-            td("Address4"), td("Up")
-          )
-        )
-      )
+      div(id := "cluster-member-table")
     )
   }
 

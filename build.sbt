@@ -22,15 +22,20 @@ lazy val root = crossProject.in(file("."))
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "scalatags" % "0.5.2"
+      "com.lihaoyi" %%% "scalatags" % "0.5.2",
+      "com.lihaoyi" %%% "upickle" % "0.3.6"
     )
   ).jsSettings(
     name := "akka-cluster-monitor-dashboard",
     scalaJSStage in Global := FastOptStage,
 
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "0.8.0"
+      "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+      "com.github.japgolly.scalajs-react" %%% "core" % "0.9.2"
     ),
+
+    jsDependencies += "org.webjars" % "react" % "0.12.2" / "react-with-addons.js" commonJSName "React",
+    skip in packageJSDependencies := false,
 
     scalajsOutputDir := (classDirectory in Compile).value / "web" / "js",  // compiled js into js classDirectory
 
@@ -75,8 +80,6 @@ lazy val shared = project.in(file("shared"))
       "com.typesafe.akka" %% "akka-stream-experimental" % akkaExperimentalVersion,
       "com.typesafe.akka" %% "akka-http-experimental" % akkaExperimentalVersion,
       "com.typesafe.akka" %% "akka-http-core-experimental" % akkaExperimentalVersion,
-
-      "de.heikoseeberger" %% "akka-http-upickle" % "1.1.0",
 
       "com.lihaoyi" %%% "scalatags" % "0.5.2"
     )

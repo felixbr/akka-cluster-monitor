@@ -27,6 +27,7 @@ class IndexHtmlPage[Builder, Output <: FragT, FragT](implicit val bundle: scalat
         cssHeader
       ),
       body(
+        script(`type`:="text/javascript", src:="js/akka-cluster-monitor-dashboard-jsdeps.js"),
         script(`type`:="text/javascript", src:="js/akka-cluster-monitor-dashboard-fastopt.js"),
         script(`type`:="text/javascript")(
           "webapp.Webapp().main()"

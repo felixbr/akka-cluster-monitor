@@ -1,7 +1,6 @@
 package domain
 
 import scala.collection.immutable.SortedSet
-import akka.actor.Address
 
 import aliases._
 
@@ -18,12 +17,17 @@ object Member {
   implicit def fromClusterMember(m: akka.cluster.Member): Member = Member(m.address, m.status.toString, m.roles)
 }
 
+case class Address(protocol: String, system: String, host: Option[String], port: Option[Int])
+
+object Address {
+  implicit def fromActorAddress(a: akka.actor.Address): Address = Address(a.protocol, a.system, a.host, a.port)
+}
 
 case class MemberJoined(member: Member)
 
 case class MemberLeft(member: Member, previousStatus: Status)
 
-case class CurrentMembers(members: Set[Member])
+case class ClusterMembers(members: Set[Member])
 
 case class Error(error: String)
 

@@ -29,7 +29,7 @@ object websockets {
 
       val commandDispatch = b.add(Flow[WSStreamEvent[_]].collect[String] {
         case WSStreamEvent("nodes") =>
-          write(CurrentMembers(cluster.state.members))
+          write(ClusterMembers(cluster.state.members))
 
         case WSStreamEvent(PushMessage(msg)) =>
           msg
