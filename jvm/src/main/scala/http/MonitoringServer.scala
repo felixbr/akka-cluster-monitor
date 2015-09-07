@@ -2,24 +2,21 @@ package http
 
 import akka.actor.ActorSystem
 import akka.cluster.Cluster
-import akka.http.scaladsl.marshalling.{PredefinedToEntityMarshallers, Marshal}
-import akka.http.scaladsl.model._
-import akka.stream.ActorMaterializer
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.marshalling.PredefinedToEntityMarshallers
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
+import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
-import http.websockets.handlerFlow
 import config.websocket
+import http.websockets.handlerFlow
+import util.LocalHostMixin
 import webapp.pages.IndexHtmlPage
 
 import scala.io.StdIn.readLine
 
-object MonitoringServer extends {
-  val port = 2600
-  val config = ConfigFactory.parseString(s"akka.remote.netty.tcp.port = $port")
-    .withFallback(ConfigFactory.load())
-
-  implicit val system = ActorSystem("ClusterSystem", config)
+object MonitoringServer extends LocalHostMixin {
+  implicit val system = ActorSystem("ClusterSystem", configWithPort(2600))
   implicit val mat = ActorMaterializer()
 
   // use 'text/html' instead of 'text/plain' for serializing Strings
@@ -41,9 +38,10 @@ object MonitoringServer extends {
     }
 
   def main(args: Array[String]): Unit = {
+    import config.websocket.{host, port}
     implicit val ec = system.dispatcher
 
-    val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
+    val bindingFuture = Http().bindAndHandle(route, host, port)
     val cluster = Cluster(system)
 
     readLine("Press ENTER to quit...\n\n")
@@ -52,10 +50,8 @@ object MonitoringServer extends {
     bindingFuture
       .flatMap(_.unbind()) // trigger unbinding from the port
       .onComplete { _ =>
-        cluster.registerOnMemberRemoved {
-          system.terminate()
-        }
         cluster.leave(cluster.selfAddress)
+        system.terminate()
       }
   }
 }

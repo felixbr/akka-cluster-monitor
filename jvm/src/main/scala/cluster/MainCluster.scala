@@ -2,18 +2,15 @@ package cluster
 
 import akka.actor.{ActorSystem, Props}
 import akka.cluster.Cluster
-import com.typesafe.config.ConfigFactory
+import util.LocalHostMixin
 
 import scala.io.StdIn.readLine
 
-object MainCluster {
+object MainCluster extends LocalHostMixin {
 
   def startup(ports: Seq[Int]): Seq[Cluster] = {
     ports.map { port =>
-      val config = ConfigFactory.parseString(s"akka.remote.netty.tcp.port = $port")
-        .withFallback(ConfigFactory.load())
-
-      val system = ActorSystem("ClusterSystem", config)
+      val system = ActorSystem("ClusterSystem", configWithPort(port))
       system.actorOf(Props[SimpleClusterListener], name = "clusterListener")
 
       Cluster(system)
@@ -21,10 +18,8 @@ object MainCluster {
   }
 
   def shutdown(clusterNode: Cluster): Unit = {
-    clusterNode.registerOnMemberRemoved {
-      clusterNode.system.terminate()
-    }
     clusterNode.leave(clusterNode.selfAddress)
+    clusterNode.system.terminate()
   }
 
   def main(args: Array[String]): Unit = {

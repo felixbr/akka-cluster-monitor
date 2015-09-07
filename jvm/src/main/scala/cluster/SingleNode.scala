@@ -2,18 +2,14 @@ package cluster
 
 import akka.actor.{ActorSystem, Address}
 import akka.cluster.Cluster
-import com.typesafe.config.ConfigFactory
+import util.LocalHostMixin
 
 import scala.io.StdIn.readLine
 
-object SingleNode {
+object SingleNode extends LocalHostMixin {
 
   def initNode() = {
-    val port = 2553
-    val config = ConfigFactory.parseString(s"akka.remote.netty.tcp.port = $port")
-      .withFallback(ConfigFactory.load())
-
-    val system = ActorSystem("ClusterSystem", config)
+    val system = ActorSystem("ClusterSystem", configWithPort(2553))
     val cluster = Cluster(system)
 
     readLine("Press ENTER to quit...\n\n")
