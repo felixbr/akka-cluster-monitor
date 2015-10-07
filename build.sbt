@@ -23,7 +23,8 @@ lazy val root = crossProject.in(file("."))
   .settings(
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "scalatags" % "0.5.2",
-      "com.lihaoyi" %%% "upickle" % "0.3.6"
+      "com.lihaoyi" %%% "upickle" % "0.3.6",
+      "com.lihaoyi" %%% "scalarx" % "0.2.8"
     )
   ).jsSettings(
     name := "akka-cluster-monitor-dashboard",
@@ -31,7 +32,8 @@ lazy val root = crossProject.in(file("."))
 
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.8.0",
-      "com.github.japgolly.scalajs-react" %%% "core" % "0.9.2"
+      "com.github.japgolly.scalajs-react" %%% "core" % "0.9.2",
+      "com.github.japgolly.scalajs-react" %%% "extra" % "0.9.2"
     ),
 
     jsDependencies += "org.webjars" % "react" % "0.12.2" / "react-with-addons.js" commonJSName "React",
@@ -53,7 +55,9 @@ lazy val root = crossProject.in(file("."))
 
       "de.heikoseeberger" %% "akka-http-upickle" % "1.1.0",
 
-      "org.scalatest" %% "scalatest" % "2.1.6" % "test"
+      "org.scalatest" %% "scalatest" % "2.1.6" % "test",
+
+      "com.github.japgolly.scalajs-react" % "core_sjs0.6_2.11" % "0.9.2"
     ),
     webOutputDir in Global := (classDirectory in Compile).value / "web"
   )
@@ -81,7 +85,10 @@ lazy val shared = project.in(file("shared"))
       "com.typesafe.akka" %% "akka-http-experimental" % akkaExperimentalVersion,
       "com.typesafe.akka" %% "akka-http-core-experimental" % akkaExperimentalVersion,
 
-      "com.lihaoyi" %%% "scalatags" % "0.5.2"
+      "com.lihaoyi" %%% "scalatags" % "0.5.2",
+      "com.lihaoyi" %%% "upickle" % "0.3.6",
+      "com.github.japgolly.scalajs-react" % "core_sjs0.6_2.11" % "0.9.2",
+      "com.lihaoyi" %%% "scalarx" % "0.2.8"
     )
   )
 

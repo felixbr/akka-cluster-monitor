@@ -4,8 +4,10 @@ import domain.Member
 import japgolly.scalajs.react.ReactComponentB
 
 
-object table {
+object ClusterMemberTable {
   import japgolly.scalajs.react.vdom.prefix_<^._
+
+  case class Props(members: Set[Member])
 
   private implicit class RichMember(member: Member) {
     def hasStatus(status: String): Boolean = member.status == status
@@ -34,7 +36,7 @@ object table {
     )
   }.build
 
-  val memberTable = ReactComponentB[Set[Member]]("table of members").render { members =>
+  val memberTable = ReactComponentB[Props]("table of members").render { P =>
     <.table(
       ^.cls := "table table-hover",
       <.thead(
@@ -47,7 +49,7 @@ object table {
         )
       ),
       <.tbody(
-        members.zipWithIndex.map { case (m: Member, idx: Int) => memberRow((m, idx + 1)) }
+        P.members.zipWithIndex.map { case (m: Member, idx: Int) => memberRow((m, idx + 1)) }
       )
     )
   }.build

@@ -7,7 +7,8 @@ import akka.stream.actor.ActorPublisher
 import akka.stream.actor.ActorPublisherMessage.Request
 import domain._
 import stream.PushMessageActor._
-import upickle.default._
+import webapp.Api.ClusterMembersUpdate
+import webapp.pickling.serializeServerMessage
 
 import scala.annotation.tailrec
 
@@ -32,17 +33,17 @@ class PushMessageActor extends ActorPublisher[PushMessage] {
   override def receive: Receive = {
     case MemberUp(member) =>
 //      self ! PushMessage(write(MemberJoined(member)))
-      self ! PushMessage(write(ClusterMembers(cluster.state.members.map(Member.fromClusterMember))))
+      self ! PushMessage(serializeServerMessage(ClusterMembersUpdate(cluster.state.members.map(Member.fromClusterMember))))
 
     case UnreachableMember(member) =>
-      self ! PushMessage(write(ClusterMembers(cluster.state.members.map(Member.fromClusterMember))))
+      self ! PushMessage(serializeServerMessage(ClusterMembersUpdate(cluster.state.members.map(Member.fromClusterMember))))
 
     case MemberRemoved(member, prevStatus) =>
-      self ! PushMessage(write(ClusterMembers(cluster.state.members.map(Member.fromClusterMember))))
+      self ! PushMessage(serializeServerMessage(ClusterMembersUpdate(cluster.state.members.map(Member.fromClusterMember))))
 //      self ! PushMessage(write(MemberLeft(member, prevStatus.toString)))
 
     case CurrentClusterState(members, unreachable, _, _, _) =>
-      self ! PushMessage(write(ClusterMembers(members.map(Member.fromClusterMember))))
+      self ! PushMessage(serializeServerMessage(ClusterMembersUpdate(members.map(Member.fromClusterMember))))
 
     case p @ PushMessage(msg) =>
       if (buf.isEmpty && totalDemand > 0) {
